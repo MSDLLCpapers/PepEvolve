@@ -1,0 +1,102 @@
+{
+    "name": "RL_cyclic_permeable_soluble_peptides",
+    "model_type": "mol2mol",
+    "model_path": "./data/models/dynamic_mask_shift_36.ckpt",
+    "input_sequence": "N2[C@@H](Cc1ccc(O)cc1)C(=O)|N1[C@@H](CCC1)C(=O)|N[C@@H](C)C(=O)|N[C@@H](C)C(=O)|N[C@@H](CO)C(=O)|N[C@@H](Cc1ccc(O)cc1)C(=O)|N[C@@H](CCCNC(=N)N)C(=O)|NCC(=O)|NCC2(=O)",
+    "learning_configuration": {
+        "routing_steps": 0,
+        "evolving_steps": 250,
+        "num_positions": 4,
+        "positions": [
+            2,
+            3,
+            7,
+            8
+        ],
+        "batch_size": 128,
+        "score_multiplier": 80,
+        "learning_rate": 5e-05,
+        "distance_threshold": -20,
+        "K": 16,
+        "G": 8,
+        "evolve_mode": "single",
+        "agent_context_visibility": "self_mask",
+        "use_group_relative_advantage": false
+    },
+    "scoring_function": {
+        "scoring_function": "geometric_mean",
+        "scoring_components": [
+            {
+                "name": "predictive_model",
+                "weight": 3,
+                "specific_parameters": {
+                    "transformation": {
+                        "transformation_type": "no_transformation"
+                    },
+                    "model_path": "./data/models/predictive_model.pckl",
+                    "scalar_path": "./data/models/feature_scalar.pckl"
+                }
+            },
+            {
+                "name": "maximum_ring_size",
+                "weight": 1,
+                "specific_parameters": {
+                    "transformation": {
+                        "transformation_type": "double_sigmoid",
+                        "low": 14,
+                        "high": 30,
+                        "coef_div": 10,
+                        "coef_si": 20,
+                        "coef_se": 20
+                    }
+                }
+            },
+            {
+                "name": "lipophilicity",
+                "weight": 1,
+                "specific_parameters": {
+                    "transformation": {
+                        "transformation_type": "reverse_sigmoid",
+                        "low": -5,
+                        "high": 0,
+                        "k": 0.5
+                    }
+                }
+            },
+            {
+                "name": "custom_alerts",
+                "weight": 1,
+                "specific_parameters": {
+                    "transformation": {
+                        "transformation_type": "no_transformation"
+                    },
+                    "smarts": [
+                        "[#8][#8]",
+                        "[#6;+]",
+                        "[#7;!n][S;!$(S(=O)=O)]",
+                        "[#7;!n][#7;!n]",
+                        "C#C",
+                        "C(=[O,S])[O,S]",
+                        "[#7;!n][C;!$(C(=[O,N])[N,O])][#16;!s]",
+                        "[#7;!n][C;!$(C(=[O,N])[N,O])][#7;!n]",
+                        "[#7;!n][C;!$(C(=[O,N])[N,O])][#8;!o]",
+                        "[#8;!o][C;!$(C(=[O,N])[N,O])][#16;!s]",
+                        "[#8;!o][C;!$(C(=[O,N])[N,O])][#8;!o]",
+                        "[#16;!s][C;!$(C(=[O,N])[N,O])][#16;!s]"
+                    ]
+                }
+            }
+        ]
+    },
+    "logging": {
+        "logging_path": "/output/journal/logging/",
+        "result_path": "/output/journal/result/"
+    },
+    "diversity_filter": {
+        "name": "IdenticalMurckoScaffold",
+        "score_threshold": 0.4,
+        "bucket_size": 25,
+        "similarity_threshold": 0.4,
+        "penalty": 0.5
+    }
+}

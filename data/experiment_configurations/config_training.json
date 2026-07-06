@@ -1,0 +1,19 @@
+{
+  "name": "pepevolve",
+  "data_mode": "mask_shift",
+  "training_data_path": "data/train_data/dynamic/train.csv",
+  "validation_data_path": "data/train_data/static/val1.csv",
+  "validation2_data_path": "data/train_data/static/val2.csv",
+  "save_directory": "checkpoint/dynamic_mask_shift_05",
+  "N": 6,
+  "H": 8,
+  "d_model": 256,
+  "d_ff": 2048,
+  "batch_size": 16,
+  "num_epoch": 1000,
+  "starting_epoch": 1,
+  "max_sequence_length": 500,
+  "run_type": "training"
+}
+
+

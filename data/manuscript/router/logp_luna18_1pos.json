@@ -1,0 +1,45 @@
+{
+    "name": "logp",
+    "model_type": "mol2mol",
+    "model_path": "./data/models/dynamic_mask_shift_36.ckpt",
+    "input_sequence": "N3(C)[C@@H](C1CCCC1)C(=O)|N(C)[C@H](C(=O)N(C)C)CC(=O)|N(C)[C@@H](CC(C)C)C(=O)|N[C@@H]([C@H](CC)C)C(=O)|N(C)[C@@H](C)C(=O)|N1[C@@H](CC1)C(=O)|N(CC)[C@@H](Cc1ccc(C)cc1)C(=O)|N(C)CC(=O)|N[C@@H](CCc1cc(F)c(C(F)(F)F)c(F)c1)C(=O)|N1[C@@H](CCC1)C(=O)|NC1(CCCC1)C3(=O)",
+    "learning_configuration": {
+        "routing_steps": 500,
+        "evolving_steps": 0,
+        "num_positions": 1,
+        "num_samples": 4,
+        "num_gen_per_sample": 32,
+        "batch_size": 128,
+        "score_multiplier": 100,
+        "learning_rate": 5e-05,
+        "distance_threshold": -30
+    },
+    "scoring_function": {
+        "scoring_function": "geometric_mean",
+        "scoring_components": [
+            {
+                "name": "logp",
+                "weight": 1,
+                "specific_parameters": {
+                    "transformation": {
+                        "transformation_type": "reverse_sigmoid",
+                        "low": -1,
+                        "high": 5.3,
+                        "k": 0.5
+                    }
+                }
+            }
+        ]
+    },
+    "logging": {
+        "logging_path": "/output/logging/",
+        "result_path": "/output/result/"
+    },
+    "diversity_filter": {
+        "name": "NoFilterWithPenalty",
+        "score_threshold": 0.5,
+        "bucket_size": 25,
+        "similarity_threshold": 0.4,
+        "penalty": 0.3
+    }
+}

@@ -1,0 +1,10 @@
+{
+  "model_type": "mol2mol",
+  "model_path": "data/models/generative_model.ckpt",
+  "results_output": "data/manuscript/output.csv",
+  "input_sequences_path": "data/manuscript/input.csv",
+  "batch_size": 100,
+  "num_samples": 100,
+  "beam_size": 1000,
+  "run_type": "sampling"
+}

@@ -1,0 +1,45 @@
+{
+    "name": "hbd",
+    "model_type": "mol2mol",
+    "model_path": "./data/models/dynamic_mask_shift_36.ckpt",
+    "input_sequence": "N[C@@H](Cc1c[nH]cn1)C(=O)|N[C@@H](Cc1ccc(O)cc1)C(=O)|N[C@@H](CCSC)C(=O)|N(C)[C@@H](CCCCN)C(=O)|N[C@H](CCCCN)C(=O)|N[C@@H](C(C)C)C(=O)|N[C@@H](CCC(=O)N)C(=O)|N[C@@H]([C@@H](C)O)C(=O)|N[C@H](CO)C(=O)|NCC(=O)|NCC(=O)|N[C@@H](C1CN(C(=O)N(CCC#N)C2CC2)C1)C(=O)|N[C@@H](Cc1c[nH]cn1)C(=O)|N[C@@H](CN[C@@H]CN[C@@H]C(=O)N)C(=O)|NCC(=O)|N[C@@H]N[C@@H](Cc1c[nH]c2ccccc12)C(=O)",
+    "learning_configuration": {
+        "routing_steps": 500,
+        "evolving_steps": 0,
+        "num_positions": 1,
+        "num_samples": 4,
+        "num_gen_per_sample": 32,
+        "batch_size": 128,
+        "score_multiplier": 100,
+        "learning_rate": 5e-05,
+        "distance_threshold": -30
+    },
+    "scoring_function": {
+        "scoring_function": "geometric_mean",
+        "scoring_components": [
+            {
+                "name": "hydrogen_bond_donor",
+                "weight": 1,
+                "specific_parameters": {
+                    "transformation": {
+                        "transformation_type": "reverse_sigmoid",
+                        "low": 22,
+                        "high": 29,
+                        "k": 0.5
+                    }
+                }
+            }
+        ]
+    },
+    "logging": {
+        "logging_path": "/output/logging/",
+        "result_path": "/output/result/"
+    },
+    "diversity_filter": {
+        "name": "NoFilterWithPenalty",
+        "score_threshold": 0.5,
+        "bucket_size": 25,
+        "similarity_threshold": 0.4,
+        "penalty": 0.3
+    }
+}

@@ -1,0 +1,9 @@
+
+[tool.ruff]
+line-length = 120
+include = [
+    "PepINVENT/pepinvent/scoring_function/**/*.py"
+]
+lint.ignore = [
+    "E722", # bare except
+]
