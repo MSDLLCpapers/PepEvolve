@@ -59,7 +59,7 @@ class Mol2MolModel:
         :param mode: Mode in which the model should be initialized
         :return: An instance of the network
         """
-        loaded = torch.load(path_to_file, weights_only=False)
+        loaded = torch.load(path_to_file, weights_only=False, map_location=torch.device('cpu'))
         data = from_dict(Mol2MolModelParameterDTO, loaded)
         network = EncoderDecoder(**vars(data.network_parameter))
         network.load_state_dict(data.network_state)

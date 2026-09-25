@@ -314,7 +314,8 @@ class LearningScenario:
             # if evolve_step % 50 == 0: 
             #     self._save_diversity_filter(name=f'results_evolving_step{evolve_step}.csv')
 
-        self._save_diversity_filter(name=f'results_evolving_step{evolve_step}.csv')
+        if self._lc.evolving_steps > 0:
+            self._save_diversity_filter(name=f'results_evolving_step{evolve_step}.csv')
         self._logger._summary_writer.close()
 
     def _create_report(self, agent_idx, dtos, final_summary) -> List[OutputDTO]:

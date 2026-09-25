@@ -31,9 +31,10 @@ def customize(learning_parameters, name) :
     
 
 if __name__ == "__main__":
+
     path, name = argv[1], argv[2]
     config = read_json_file(path)
-    
+
     learning_parameters = ReinforcementLearningConfiguration.parse_obj(config)
     learning_parameters = customize(learning_parameters, name)
 

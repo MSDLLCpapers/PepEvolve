@@ -22,6 +22,7 @@
   - [Router Experiment (`data/manuscript/router/`)](#router-experiment-datamanuscriptrouter)
   - [Main CRBP Experiment (`data/manuscript/crbp/`)](#main-crbp-experiment-datamanuscriptcrbp)
   - [Ablation Study (`data/manuscript/ablation/`)](#ablation-study-datamanuscriptablation)
+- [GA Baseline (Benchmark)](#ga-baseline-benchmark)
 - [Outputs](#outputs)
 - [Citation](#citation)
 
@@ -338,6 +339,71 @@ python input_to_reinforcement_learning.py \
     data/manuscript/ablation/topk_gra/self_single.json \
     ablation_topk_gra_self_single_run1
 ```
+
+---
+
+## GA Baseline (Benchmark)
+
+A model-free genetic algorithm (GA) baseline for cyclic peptide optimization, used to benchmark PepEVOLVE. It uses frequency-weighted monomer mutation drawn from the training data and the **same** geometric mean scoring function, mutable positions, and output format as the PepEVOLVE experiments, so results are directly comparable with the analysis code in `tools/notebook/manuscript-figure.ipynb`.
+
+### 1. Build monomer pool (one-time)
+
+```bash
+python traditional_ga.py build_pool \
+    --train_data data/train_data/train_filled_chuckles.txt
+```
+
+Saves `data/monomer_pool.pkl` (41K interior monomers with frequency weights).
+
+### 2. Run the GA
+
+```bash
+python traditional_ga.py run \
+    --config data/manuscript/crbp/ga.json \
+    --output_dir output/journal/result/traditional_ga1 \
+    --model_base_dir data/models \
+    --seed 42
+```
+
+### 3. Submit all jobs (PBS cluster)
+
+```bash
+./submit_traditional_ga.sh          # submit to queue
+./submit_traditional_ga.sh --local  # run sequentially
+```
+
+Submits 3 jobs with the `ga` config × 3 seeds (42, 123, 456).
+
+### GA Parameters
+
+| Parameter | Default | Description |
+|---|---|---|
+| `--pop_size` | 128 | Population size per generation |
+| `--n_generations` | 250 | Number of generations |
+| `--mutation_rate` | 0.15 | Per-position mutation probability |
+| `--crossover_rate` | 0.7 | Crossover probability |
+| `--elite_frac` | 0.1 | Fraction of population preserved as elite |
+| `--tournament_k` | 3 | Tournament selection size |
+
+### GA Design
+
+- **Mutation pool**: 41K interior monomers from training data, sampled proportional to frequency.
+- **Mutable positions**: Only positions specified in the config (`learning_configuration.positions`), same as the PepEVOLVE ablation studies.
+- **Ring closure**: Automatically adds the macrocycle ring-closure digit when mutating terminal positions.
+- **Crossover**: Swaps monomers at mutable positions between two parents.
+- **Selection**: Tournament selection (k=3) + elitism (top 10%).
+- **Scoring**: Same geometric mean scoring function as PepEVOLVE (predictive model + ring size + lipophilicity + custom alerts).
+
+### GA Output
+
+Results are saved as `results_evolving_step250.csv` with columns:
+
+| Column | Description |
+|---|---|
+| `Step` | Generation number |
+| `SMILES` | Concatenated SMILES (for scoring/comparison) |
+| `CHUCKLES` | Pipe-delimited monomer representation |
+| `total_score` | Geometric mean of scoring components |
 
 ---
 
